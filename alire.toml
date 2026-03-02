@@ -1,0 +1,10 @@
+name = "pixmada"
+description = "Ada bindings to Pixman"
+version = "0.1.0-dev"
+
+authors = ["Ștefan-Iulian Alecu"]
+maintainers = ["Ștefan-Iulian Alecu <stalecu64@gmail.com>"]
+maintainers-logins = ["pascalecu"]
+licenses = "BSD-2-Clause"
+website = "https://github.com/pascalecu/pixmada"
+tags = ["pixman", "graphics", "2d-graphics", "image", "images", "rasterization"]
