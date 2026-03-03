@@ -10,4 +10,4 @@ website = "https://github.com/pascalecu/pixmada"
 tags = ["pixman", "graphics", "2d-graphics", "image", "images", "rasterization"]
 
 [[depends-on]]
-libpixman = "*"
+libpixman = "~0.44.0"
