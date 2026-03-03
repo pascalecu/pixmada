@@ -1,5 +1,6 @@
-with Interfaces;   use Interfaces;
-with Interfaces.C; use Interfaces.C;
+with Interfaces;           use Interfaces;
+with Interfaces.C;         use Interfaces.C;
+with Interfaces.C.Strings; use Interfaces.C.Strings;
 with System;
 
 package Pixmada.Thin is
@@ -80,32 +81,112 @@ package Pixmada.Thin is
    with Convention => C_Pass_By_Copy;
 
    --- Vectors and matrices.
-   type pixman_vector_3 is array (0 .. 2) of pixman_fixed_t;
+   type pixman_vector_3 is array (0 .. 2) of aliased pixman_fixed_t;
    type pixman_vector_t is record
       vector : aliased pixman_vector_3;
    end record
    with Convention => C_Pass_By_Copy;
 
-   type pixman_matrix_3x3 is array (0 .. 2, 0 .. 2) of pixman_fixed_t;
-   type pixman_matrix_t is record
+   type pixman_matrix_3x3 is array (0 .. 2, 0 .. 2) of aliased pixman_fixed_t;
+   type pixman_transform_t is record
       matrix : aliased pixman_matrix_3x3;
    end record
    with Convention => C_Pass_By_Copy;
 
-   type pixman_f_vector_3 is array (0 .. 2) of double;
+   type pixman_f_vector_3 is array (0 .. 2) of aliased double;
    type pixman_f_vector_t is record
       v : aliased pixman_f_vector_3;
    end record
    with Convention => C_Pass_By_Copy;
 
-   type pixman_f_matrix_3x3 is array (0 .. 2, 0 .. 2) of double;
-   type pixman_f_matrix_t is record
+   type pixman_f_matrix_3x3 is array (0 .. 2, 0 .. 2) of aliased double;
+   type pixman_f_transform_t is record
       m : aliased pixman_f_matrix_3x3;
    end record
    with Convention => C_Pass_By_Copy;
 
-   --- Forward declaration
    type pixman_image_t is null record;
+
+   type pixman_repeat_t is
+     (PIXMAN_REPEAT_NONE,
+      PIXMAN_REPEAT_NORMAL,
+      PIXMAN_REPEAT_PAD,
+      PIXMAN_REPEAT_REFLECT)
+   with Convention => C;
+
+   type pixman_dither_t is
+     (PIXMAN_DITHER_NONE,
+      PIXMAN_DITHER_FAST,
+      PIXMAN_DITHER_GOOD,
+      PIXMAN_DITHER_BEST,
+      PIXMAN_DITHER_ORDERED_BAYER_8,
+      PIXMAN_DITHER_ORDERED_BLUE_NOISE_64)
+   with Convention => C;
+
+   type pixman_filter_t is
+     (PIXMAN_FILTER_FAST,
+      PIXMAN_FILTER_GOOD,
+      PIXMAN_FILTER_BEST,
+      PIXMAN_FILTER_NEAREST,
+      PIXMAN_FILTER_BILINEAR,
+      PIXMAN_FILTER_CONVOLUTION,
+      PIXMAN_FILTER_SEPARABLE_CONVOLUTION)
+   with Convention => C;
+
+   subtype pixman_op_t is unsigned;
+   PIXMAN_OP_CLEAR                 : constant pixman_op_t := 0;
+   PIXMAN_OP_SRC                   : constant pixman_op_t := 1;
+   PIXMAN_OP_DST                   : constant pixman_op_t := 2;
+   PIXMAN_OP_OVER                  : constant pixman_op_t := 3;
+   PIXMAN_OP_OVER_REVERSE          : constant pixman_op_t := 4;
+   PIXMAN_OP_IN                    : constant pixman_op_t := 5;
+   PIXMAN_OP_IN_REVERSE            : constant pixman_op_t := 6;
+   PIXMAN_OP_OUT                   : constant pixman_op_t := 7;
+   PIXMAN_OP_OUT_REVERSE           : constant pixman_op_t := 8;
+   PIXMAN_OP_ATOP                  : constant pixman_op_t := 9;
+   PIXMAN_OP_ATOP_REVERSE          : constant pixman_op_t := 10;
+   PIXMAN_OP_XOR                   : constant pixman_op_t := 11;
+   PIXMAN_OP_ADD                   : constant pixman_op_t := 12;
+   PIXMAN_OP_SATURATE              : constant pixman_op_t := 13;
+   PIXMAN_OP_DISJOINT_CLEAR        : constant pixman_op_t := 16;
+   PIXMAN_OP_DISJOINT_SRC          : constant pixman_op_t := 17;
+   PIXMAN_OP_DISJOINT_DST          : constant pixman_op_t := 18;
+   PIXMAN_OP_DISJOINT_OVER         : constant pixman_op_t := 19;
+   PIXMAN_OP_DISJOINT_OVER_REVERSE : constant pixman_op_t := 20;
+   PIXMAN_OP_DISJOINT_IN           : constant pixman_op_t := 21;
+   PIXMAN_OP_DISJOINT_IN_REVERSE   : constant pixman_op_t := 22;
+   PIXMAN_OP_DISJOINT_OUT          : constant pixman_op_t := 23;
+   PIXMAN_OP_DISJOINT_OUT_REVERSE  : constant pixman_op_t := 24;
+   PIXMAN_OP_DISJOINT_ATOP         : constant pixman_op_t := 25;
+   PIXMAN_OP_DISJOINT_ATOP_REVERSE : constant pixman_op_t := 26;
+   PIXMAN_OP_DISJOINT_XOR          : constant pixman_op_t := 27;
+   PIXMAN_OP_CONJOINT_CLEAR        : constant pixman_op_t := 32;
+   PIXMAN_OP_CONJOINT_SRC          : constant pixman_op_t := 33;
+   PIXMAN_OP_CONJOINT_DST          : constant pixman_op_t := 34;
+   PIXMAN_OP_CONJOINT_OVER         : constant pixman_op_t := 35;
+   PIXMAN_OP_CONJOINT_OVER_REVERSE : constant pixman_op_t := 36;
+   PIXMAN_OP_CONJOINT_IN           : constant pixman_op_t := 37;
+   PIXMAN_OP_CONJOINT_IN_REVERSE   : constant pixman_op_t := 38;
+   PIXMAN_OP_CONJOINT_OUT          : constant pixman_op_t := 39;
+   PIXMAN_OP_CONJOINT_OUT_REVERSE  : constant pixman_op_t := 40;
+   PIXMAN_OP_CONJOINT_ATOP         : constant pixman_op_t := 41;
+   PIXMAN_OP_CONJOINT_ATOP_REVERSE : constant pixman_op_t := 42;
+   PIXMAN_OP_CONJOINT_XOR          : constant pixman_op_t := 43;
+   PIXMAN_OP_MULTIPLY              : constant pixman_op_t := 48;
+   PIXMAN_OP_SCREEN                : constant pixman_op_t := 49;
+   PIXMAN_OP_OVERLAY               : constant pixman_op_t := 50;
+   PIXMAN_OP_DARKEN                : constant pixman_op_t := 51;
+   PIXMAN_OP_LIGHTEN               : constant pixman_op_t := 52;
+   PIXMAN_OP_COLOR_DODGE           : constant pixman_op_t := 53;
+   PIXMAN_OP_COLOR_BURN            : constant pixman_op_t := 54;
+   PIXMAN_OP_HARD_LIGHT            : constant pixman_op_t := 55;
+   PIXMAN_OP_SOFT_LIGHT            : constant pixman_op_t := 56;
+   PIXMAN_OP_DIFFERENCE            : constant pixman_op_t := 57;
+   PIXMAN_OP_EXCLUSION             : constant pixman_op_t := 58;
+   PIXMAN_OP_HSL_HUE               : constant pixman_op_t := 59;
+   PIXMAN_OP_HSL_SATURATION        : constant pixman_op_t := 60;
+   PIXMAN_OP_HSL_COLOR             : constant pixman_op_t := 61;
+   PIXMAN_OP_HSL_LUMINOSITY        : constant pixman_op_t := 62;
 
    --- Regions, rectangles and boxes.
    type pixman_region16_data_t is record
@@ -133,9 +214,13 @@ package Pixmada.Thin is
 
    type pixman_region16_t is record
       extents : aliased pixman_box16_t;
-      data    : access pixman_region16_data;
+      data    : access pixman_region16_data_t;
    end record
    with Convention => C_Pass_By_Copy;
+
+   type pixman_region_overlap_t is
+     (PIXMAN_REGION_OUT, PIXMAN_REGION_IN, PIXMAN_REGION_PART)
+   with Convention => C;
 
    type pixman_region32_data_t is record
       size     : aliased long;
@@ -162,7 +247,7 @@ package Pixmada.Thin is
 
    type pixman_region32_t is record
       extents : aliased pixman_box32_t;
-      data    : access pixman_region32_data;
+      data    : access pixman_region32_data_t;
    end record
    with Convention => C_Pass_By_Copy;
 
@@ -387,50 +472,51 @@ package Pixmada.Thin is
    --- PIXMAN_FORMAT(12,PIXMAN_TYPE_YV12,0,0,0,0)
    pixman_yv12 : constant pixman_format_code_t := 16#0C070000#;
 
-   subtype pixman_kernel_t is uint32_t;
+   type pixman_kernel_t is
+     (PIXMAN_KERNEL_IMPULSE,
+      PIXMAN_KERNEL_BOX,
+      PIXMAN_KERNEL_LINEAR,
+      PIXMAN_KERNEL_CUBIC,
+      PIXMAN_KERNEL_GAUSSIAN,
+      PIXMAN_KERNEL_LANCZOS2,
+      PIXMAN_KERNEL_LANCZOS3,
+      PIXMAN_KERNEL_LANCZOS3_STRETCHED)
+   with Convention => C;
 
-   PIXMAN_KERNEL_IMPULSE            : constant pixman_kernel_t := 0;
-   PIXMAN_KERNEL_BOX                : constant pixman_kernel_t := 1;
-   PIXMAN_KERNEL_LINEAR             : constant pixman_kernel_t := 2;
-   PIXMAN_KERNEL_CUBIC              : constant pixman_kernel_t := 3;
-   PIXMAN_KERNEL_GAUSSIAN           : constant pixman_kernel_t := 4;
-   PIXMAN_KERNEL_LANCZOS2           : constant pixman_kernel_t := 5;
-   PIXMAN_KERNEL_LANCZOS3           : constant pixman_kernel_t := 6;
-   PIXMAN_KERNEL_LANCZOS3_STRETCHED : constant pixman_kernel_t := 7;
-
-   type pixman_glyph_cache_t is record
-      x     : int;
-      y     : int;
-      glyph : System.Address;
+   type pixman_glyph_cache_t is null record;
+   type pixman_glyph_t is record
+      x     : aliased int;
+      y     : aliased int;
+      glyph : aliased System.Address;
    end record
    with Convention => C_Pass_By_Copy;
 
    type pixman_edge_t is record
-      x           : pixman_fixed_t;
-      y           : pixman_fixed_t;
-      stepx       : pixman_fixed_t;
-      signdx      : pixman_fixed_t;
-      dy          : pixman_fixed_t;
-      dx          : pixman_fixed_t;
-      stepx_small : pixman_fixed_t;
-      stepx_big   : pixman_fixed_t;
-      dx_small    : pixman_fixed_t;
-      dx_big      : pixman_fixed_t;
+      x           : aliased pixman_fixed_t;
+      y           : aliased pixman_fixed_t;
+      stepx       : aliased pixman_fixed_t;
+      signdx      : aliased pixman_fixed_t;
+      dy          : aliased pixman_fixed_t;
+      dx          : aliased pixman_fixed_t;
+      stepx_small : aliased pixman_fixed_t;
+      stepx_big   : aliased pixman_fixed_t;
+      dx_small    : aliased pixman_fixed_t;
+      dx_big      : aliased pixman_fixed_t;
    end record
    with Convention => C_Pass_By_Copy;
 
    type pixman_trapezoid_t is record
-      top    : pixman_fixed_t;
-      bottom : pixman_fixed_t;
-      left   : pixman_line_fixed_t;
-      right  : pixman_line_fixed_t;
+      top    : aliased pixman_fixed_t;
+      bottom : aliased pixman_fixed_t;
+      left   : aliased pixman_line_fixed_t;
+      right  : aliased pixman_line_fixed_t;
    end record
    with Convention => C_Pass_By_Copy;
 
    type pixman_triangle_t is record
-      p1 : pixman_point_fixed_t;
-      p2 : pixman_point_fixed_t;
-      p3 : pixman_point_fixed_t;
+      p1 : aliased pixman_point_fixed_t;
+      p2 : aliased pixman_point_fixed_t;
+      p3 : aliased pixman_point_fixed_t;
    end record
    with Convention => C_Pass_By_Copy;
 
@@ -440,18 +526,1286 @@ package Pixmada.Thin is
        and then (t.bottom > t.top));
 
    type pixman_span_fix_t is record
-      l : pixman_fixed_t;
-      r : pixman_fixed_t;
-      y : pixman_fixed_t;
+      l : aliased pixman_fixed_t;
+      r : aliased pixman_fixed_t;
+      y : aliased pixman_fixed_t;
    end record
    with Convention => C_Pass_By_Copy;
 
    type pixman_trap_t is record
-      top    : pixman_span_fix_t;
-      bottom : pixman_span_fix_t;
+      top    : aliased pixman_span_fix_t;
+      bottom : aliased pixman_span_fix_t;
    end record
    with Convention => C_Pass_By_Copy;
 
+   --- Functions and procedures
+
+   procedure pixman_transform_init_identity
+     (matrix : access pixman_transform_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_init_identity";
+
+   function pixman_transform_point_3d
+     (transform : access constant pixman_transform_t;
+      vector    : access pixman_vector_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_point_3d";
+
+   function pixman_transform_point
+     (transform : access constant pixman_transform_t;
+      vector    : access pixman_vector_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_point";
+
+   function pixman_transform_multiply
+     (dst : access pixman_transform_t;
+      l   : access constant pixman_transform_t;
+      r   : access constant pixman_transform_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_multiply";
+
+   procedure pixman_transform_init_scale
+     (t : access pixman_transform_t; sx : pixman_fixed_t; sy : pixman_fixed_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_init_scale";
+
+   function pixman_transform_scale
+     (forward   : access pixman_transform_t;
+      c_reverse : access pixman_transform_t;
+      sx        : pixman_fixed_t;
+      sy        : pixman_fixed_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_scale";
+
+   procedure pixman_transform_init_rotate
+     (t   : access pixman_transform_t;
+      cos : pixman_fixed_t;
+      sin : pixman_fixed_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_init_rotate";
+
+   function pixman_transform_rotate
+     (forward   : access pixman_transform_t;
+      c_reverse : access pixman_transform_t;
+      c         : pixman_fixed_t;
+      s         : pixman_fixed_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_rotate";
+
+   procedure pixman_transform_init_translate
+     (t : access pixman_transform_t; tx : pixman_fixed_t; ty : pixman_fixed_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_init_translate";
+
+   function pixman_transform_translate
+     (forward   : access pixman_transform_t;
+      c_reverse : access pixman_transform_t;
+      tx        : pixman_fixed_t;
+      ty        : pixman_fixed_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_translate";
+
+   function pixman_transform_bounds
+     (matrix : access constant pixman_transform_t; b : access pixman_box16_t)
+      return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_bounds";
+
+   function pixman_transform_invert
+     (dst : access pixman_transform_t;
+      src : access constant pixman_transform_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_invert";
+
+   function pixman_transform_is_identity
+     (t : access constant pixman_transform_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_is_identity";
+
+   function pixman_transform_is_scale
+     (t : access constant pixman_transform_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_is_scale";
+
+   function pixman_transform_is_int_translate
+     (t : access constant pixman_transform_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_is_int_translate";
+
+   function pixman_transform_is_inverse
+     (a : access constant pixman_transform_t;
+      b : access constant pixman_transform_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_is_inverse";
+
+   function pixman_transform_from_pixman_f_transform
+     (t : access pixman_transform_t; ft : access constant pixman_f_transform_t)
+      return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_transform_from_pixman_f_transform";
+
+   procedure pixman_f_transform_from_pixman_transform
+     (ft : access pixman_f_transform_t; t : access constant pixman_transform_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_f_transform_from_pixman_transform";
+
+   function pixman_f_transform_invert
+     (dst : access pixman_f_transform_t;
+      src : access constant pixman_f_transform_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_f_transform_invert";
+
+   function pixman_f_transform_point
+     (t : access constant pixman_f_transform_t; v : access pixman_f_vector_t)
+      return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_f_transform_point";
+
+   procedure pixman_f_transform_point_3d
+     (t : access constant pixman_f_transform_t; v : access pixman_f_vector_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_f_transform_point_3d";
+
+   procedure pixman_f_transform_multiply
+     (dst : access pixman_f_transform_t;
+      l   : access constant pixman_f_transform_t;
+      r   : access constant pixman_f_transform_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_f_transform_multiply";
+
+   procedure pixman_f_transform_init_scale
+     (t : access pixman_f_transform_t; sx : double; sy : double)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_f_transform_init_scale";
+
+   function pixman_f_transform_scale
+     (forward   : access pixman_f_transform_t;
+      c_reverse : access pixman_f_transform_t;
+      sx        : double;
+      sy        : double) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_f_transform_scale";
+
+   procedure pixman_f_transform_init_rotate
+     (t : access pixman_f_transform_t; cos : double; sin : double)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_f_transform_init_rotate";
+
+   function pixman_f_transform_rotate
+     (forward   : access pixman_f_transform_t;
+      c_reverse : access pixman_f_transform_t;
+      c         : double;
+      s         : double) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_f_transform_rotate";
+
+   procedure pixman_f_transform_init_translate
+     (t : access pixman_f_transform_t; tx : double; ty : double)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_f_transform_init_translate";
+
+   function pixman_f_transform_translate
+     (forward   : access pixman_f_transform_t;
+      c_reverse : access pixman_f_transform_t;
+      tx        : double;
+      ty        : double) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_f_transform_translate";
+
+   function pixman_f_transform_bounds
+     (t : access constant pixman_f_transform_t; b : access pixman_box16_t)
+      return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_f_transform_bounds";
+
+   procedure pixman_f_transform_init_identity (t : access pixman_f_transform_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_f_transform_init_identity";
+
+   procedure pixman_region_set_static_pointers
+     (empty_box   : access pixman_box16_t;
+      empty_data  : access pixman_region16_data_t;
+      broken_data : access pixman_region16_data_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_set_static_pointers";
+
+   procedure pixman_region_init (region : access pixman_region16_t)
+   with Import => True, Convention => C, External_Name => "pixman_region_init";
+
+   procedure pixman_region_init_rect
+     (region : access pixman_region16_t;
+      x      : int;
+      y      : int;
+      width  : unsigned;
+      height : unsigned)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_init_rect";
+
+   function pixman_region_init_rects
+     (region : access pixman_region16_t;
+      boxes  : access constant pixman_box16_t;
+      count  : int) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_init_rects";
+
+   procedure pixman_region_init_with_extents
+     (region  : access pixman_region16_t;
+      extents : access constant pixman_box16_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_init_with_extents";
+
+   procedure pixman_region_init_from_image
+     (region : access pixman_region16_t; image : access pixman_image_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_init_from_image";
+
+   procedure pixman_region_fini (region : access pixman_region16_t)
+   with Import => True, Convention => C, External_Name => "pixman_region_fini";
+
+   procedure pixman_region_translate
+     (region : access pixman_region16_t; x : int; y : int)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_translate";
+
+   function pixman_region_copy
+     (dest   : access pixman_region16_t;
+      source : access constant pixman_region16_t) return pixman_bool_t
+   with Import => True, Convention => C, External_Name => "pixman_region_copy";
+
+   function pixman_region_intersect
+     (new_reg : access pixman_region16_t;
+      reg1    : access constant pixman_region16_t;
+      reg2    : access constant pixman_region16_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_intersect";
+
+   function pixman_region_union
+     (new_reg : access pixman_region16_t;
+      reg1    : access constant pixman_region16_t;
+      reg2    : access constant pixman_region16_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_union";
+
+   function pixman_region_union_rect
+     (dest   : access pixman_region16_t;
+      source : access constant pixman_region16_t;
+      x      : int;
+      y      : int;
+      width  : unsigned;
+      height : unsigned) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_union_rect";
+
+   function pixman_region_intersect_rect
+     (dest   : access pixman_region16_t;
+      source : access constant pixman_region16_t;
+      x      : int;
+      y      : int;
+      width  : unsigned;
+      height : unsigned) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_intersect_rect";
+
+   function pixman_region_subtract
+     (reg_d : access pixman_region16_t;
+      reg_m : access constant pixman_region16_t;
+      reg_s : access constant pixman_region16_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_subtract";
+
+   function pixman_region_inverse
+     (new_reg  : access pixman_region16_t;
+      reg1     : access constant pixman_region16_t;
+      inv_rect : access constant pixman_box16_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_inverse";
+
+   function pixman_region_contains_point
+     (region : access constant pixman_region16_t;
+      x      : int;
+      y      : int;
+      box    : access pixman_box16_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_contains_point";
+
+   function pixman_region_contains_rectangle
+     (region : access constant pixman_region16_t;
+      prect  : access constant pixman_box16_t) return pixman_region_overlap_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_contains_rectangle";
+
+   function pixman_region_empty
+     (region : access constant pixman_region16_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_empty";
+
+   function pixman_region_not_empty
+     (region : access constant pixman_region16_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_not_empty";
+
+   function pixman_region_extents
+     (region : access constant pixman_region16_t) return access pixman_box16_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_extents";
+
+   function pixman_region_n_rects
+     (region : access constant pixman_region16_t) return int
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_n_rects";
+
+   function pixman_region_rectangles
+     (region : access constant pixman_region16_t; n_rects : access int)
+      return access pixman_box16_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_rectangles";
+
+   function pixman_region_equal
+     (region1 : access constant pixman_region16_t;
+      region2 : access constant pixman_region16_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_equal";
+
+   function pixman_region_selfcheck
+     (region : access pixman_region16_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_selfcheck";
+
+   procedure pixman_region_reset
+     (region : access pixman_region16_t; box : access constant pixman_box16_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_reset";
+
+   procedure pixman_region_clear (region : access pixman_region16_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region_clear";
+
+   procedure pixman_region32_init (region : access pixman_region32_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_init";
+
+   procedure pixman_region32_init_rect
+     (region : access pixman_region32_t;
+      x      : int;
+      y      : int;
+      width  : unsigned;
+      height : unsigned)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_init_rect";
+
+   function pixman_region32_init_rects
+     (region : access pixman_region32_t;
+      boxes  : access constant pixman_box32_t;
+      count  : int) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_init_rects";
+
+   procedure pixman_region32_init_with_extents
+     (region  : access pixman_region32_t;
+      extents : access constant pixman_box32_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_init_with_extents";
+
+   procedure pixman_region32_init_from_image
+     (region : access pixman_region32_t; image : access pixman_image_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_init_from_image";
+
+   procedure pixman_region32_fini (region : access pixman_region32_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_fini";
+
+   procedure pixman_region32_translate
+     (region : access pixman_region32_t; x : int; y : int)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_translate";
+
+   function pixman_region32_copy
+     (dest   : access pixman_region32_t;
+      source : access constant pixman_region32_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_copy";
+
+   function pixman_region32_intersect
+     (new_reg : access pixman_region32_t;
+      reg1    : access constant pixman_region32_t;
+      reg2    : access constant pixman_region32_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_intersect";
+
+   function pixman_region32_union
+     (new_reg : access pixman_region32_t;
+      reg1    : access constant pixman_region32_t;
+      reg2    : access constant pixman_region32_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_union";
+
+   function pixman_region32_intersect_rect
+     (dest   : access pixman_region32_t;
+      source : access constant pixman_region32_t;
+      x      : int;
+      y      : int;
+      width  : unsigned;
+      height : unsigned) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_intersect_rect";
+
+   function pixman_region32_union_rect
+     (dest   : access pixman_region32_t;
+      source : access constant pixman_region32_t;
+      x      : int;
+      y      : int;
+      width  : unsigned;
+      height : unsigned) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_union_rect";
+
+   function pixman_region32_subtract
+     (reg_d : access pixman_region32_t;
+      reg_m : access constant pixman_region32_t;
+      reg_s : access constant pixman_region32_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_subtract";
+
+   function pixman_region32_inverse
+     (new_reg  : access pixman_region32_t;
+      reg1     : access constant pixman_region32_t;
+      inv_rect : access constant pixman_box32_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_inverse";
+
+   function pixman_region32_contains_point
+     (region : access constant pixman_region32_t;
+      x      : int;
+      y      : int;
+      box    : access pixman_box32_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_contains_point";
+
+   function pixman_region32_contains_rectangle
+     (region : access constant pixman_region32_t;
+      prect  : access constant pixman_box32_t) return pixman_region_overlap_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_contains_rectangle";
+
+   function pixman_region32_empty
+     (region : access constant pixman_region32_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_empty";
+
+   function pixman_region32_not_empty
+     (region : access constant pixman_region32_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_not_empty";
+
+   function pixman_region32_extents
+     (region : access constant pixman_region32_t) return access pixman_box32_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_extents";
+
+   function pixman_region32_n_rects
+     (region : access constant pixman_region32_t) return int
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_n_rects";
+
+   function pixman_region32_rectangles
+     (region : access constant pixman_region32_t; n_rects : access int)
+      return access pixman_box32_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_rectangles";
+
+   function pixman_region32_equal
+     (region1 : access constant pixman_region32_t;
+      region2 : access constant pixman_region32_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_equal";
+
+   function pixman_region32_selfcheck
+     (region : access pixman_region32_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_selfcheck";
+
+   procedure pixman_region32_reset
+     (region : access pixman_region32_t; box : access constant pixman_box32_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_reset";
+
+   procedure pixman_region32_clear (region : access pixman_region32_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_region32_clear";
+
+   function pixman_blt
+     (src_bits   : access uint32_t;
+      dst_bits   : access uint32_t;
+      src_stride : int;
+      dst_stride : int;
+      src_bpp    : int;
+      dst_bpp    : int;
+      src_x      : int;
+      src_y      : int;
+      dest_x     : int;
+      dest_y     : int;
+      width      : int;
+      height     : int) return pixman_bool_t
+   with Import => True, Convention => C, External_Name => "pixman_blt";
+
+   function pixman_fill
+     (bits   : access uint32_t;
+      stride : int;
+      bpp    : int;
+      x      : int;
+      y      : int;
+      width  : int;
+      height : int;
+      u_xor  : uint32_t) return pixman_bool_t
+   with Import => True, Convention => C, External_Name => "pixman_fill";
+
+   function pixman_version return int
+   with Import => True, Convention => C, External_Name => "pixman_version";
+
+   function pixman_version_string return chars_ptr
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_version_string";
+
+   type pixman_read_memory_func_t is
+     access function (arg1 : System.Address; arg2 : int) return uint32_t
+   with Convention => C;
+
+   type pixman_write_memory_func_t is
+     access procedure (arg1 : System.Address; arg2 : uint32_t; arg3 : int)
+   with Convention => C;
+
+   type pixman_image_destroy_func_t is
+     access procedure (arg1 : access pixman_image_t; arg2 : System.Address)
+   with Convention => C;
+
+   function pixman_format_supported_destination
+     (format : pixman_format_code_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_format_supported_destination";
+
+   function pixman_format_supported_source
+     (format : pixman_format_code_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_format_supported_source";
+
+   function pixman_image_create_solid_fill
+     (color : access constant pixman_color_t) return access pixman_image_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_create_solid_fill";
+
+   function pixman_image_create_linear_gradient
+     (p1      : access constant pixman_point_fixed_t;
+      p2      : access constant pixman_point_fixed_t;
+      stops   : access constant pixman_gradient_stop_t;
+      n_stops : int) return access pixman_image_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_create_linear_gradient";
+
+   function pixman_image_create_radial_gradient
+     (inner        : access constant pixman_point_fixed_t;
+      outer        : access constant pixman_point_fixed_t;
+      inner_radius : pixman_fixed_t;
+      outer_radius : pixman_fixed_t;
+      stops        : access constant pixman_gradient_stop_t;
+      n_stops      : int) return access pixman_image_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_create_radial_gradient";
+
+   function pixman_image_create_conical_gradient
+     (center  : access constant pixman_point_fixed_t;
+      angle   : pixman_fixed_t;
+      stops   : access constant pixman_gradient_stop_t;
+      n_stops : int) return access pixman_image_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_create_conical_gradient";
+
+   function pixman_image_create_bits
+     (format          : pixman_format_code_t;
+      width           : int;
+      height          : int;
+      bits            : access uint32_t;
+      rowstride_bytes : int) return access pixman_image_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_create_bits";
+
+   function pixman_image_create_bits_no_clear
+     (format          : pixman_format_code_t;
+      width           : int;
+      height          : int;
+      bits            : access uint32_t;
+      rowstride_bytes : int) return access pixman_image_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_create_bits_no_clear";
+
+   function pixman_image_ref
+     (image : access pixman_image_t) return access pixman_image_t
+   with Import => True, Convention => C, External_Name => "pixman_image_ref";
+
+   function pixman_image_unref
+     (image : access pixman_image_t) return pixman_bool_t
+   with Import => True, Convention => C, External_Name => "pixman_image_unref";
+
+   procedure pixman_image_set_destroy_function
+     (image      : access pixman_image_t;
+      c_function : pixman_image_destroy_func_t;
+      data       : System.Address)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_set_destroy_function";
+
+   function pixman_image_get_destroy_data
+     (image : access pixman_image_t) return System.Address
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_get_destroy_data";
+
+   function pixman_image_set_clip_region
+     (image  : access pixman_image_t;
+      region : access constant pixman_region16_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_set_clip_region";
+
+   function pixman_image_set_clip_region32
+     (image  : access pixman_image_t;
+      region : access constant pixman_region32_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_set_clip_region32";
+
+   procedure pixman_image_set_has_client_clip
+     (image : access pixman_image_t; clien_clip : pixman_bool_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_set_has_client_clip";
+
+   function pixman_image_set_transform
+     (image     : access pixman_image_t;
+      transform : access constant pixman_transform_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_set_transform";
+
+   procedure pixman_image_set_repeat
+     (image : access pixman_image_t; repeat : pixman_repeat_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_set_repeat";
+
+   procedure pixman_image_set_dither
+     (image : access pixman_image_t; dither : pixman_dither_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_set_dither";
+
+   procedure pixman_image_set_dither_offset
+     (image : access pixman_image_t; offset_x : int; offset_y : int)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_set_dither_offset";
+
+   function pixman_image_set_filter
+     (image           : access pixman_image_t;
+      filter          : pixman_filter_t;
+      filter_params   : access pixman_fixed_t;
+      n_filter_params : int) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_set_filter";
+
+   procedure pixman_image_set_source_clipping
+     (image : access pixman_image_t; source_clipping : pixman_bool_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_set_source_clipping";
+
+   procedure pixman_image_set_alpha_map
+     (image     : access pixman_image_t;
+      alpha_map : access pixman_image_t;
+      x         : int16_t;
+      y         : int16_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_set_alpha_map";
+
+   procedure pixman_image_set_component_alpha
+     (image : access pixman_image_t; component_alpha : pixman_bool_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_set_component_alpha";
+
+   function pixman_image_get_component_alpha
+     (image : access pixman_image_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_get_component_alpha";
+
+   procedure pixman_image_set_accessors
+     (image      : access pixman_image_t;
+      read_func  : pixman_read_memory_func_t;
+      write_func : pixman_write_memory_func_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_set_accessors";
+
+   procedure pixman_image_set_indexed
+     (image   : access pixman_image_t;
+      indexed : access constant pixman_indexed_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_set_indexed";
+
+   function pixman_image_get_data
+     (image : access pixman_image_t) return access uint32_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_get_data";
+
+   function pixman_image_get_width (image : access pixman_image_t) return int
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_get_width";
+
+   function pixman_image_get_height (image : access pixman_image_t) return int
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_get_height";
+
+   function pixman_image_get_stride (image : access pixman_image_t) return int
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_get_stride";
+
+   function pixman_image_get_depth (image : access pixman_image_t) return int
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_get_depth";
+
+   function pixman_image_get_format
+     (image : access pixman_image_t) return pixman_format_code_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_get_format";
+
+   function pixman_filter_create_separable_convolution
+     (n_values         : access int;
+      scale_x          : pixman_fixed_t;
+      scale_y          : pixman_fixed_t;
+      reconstruct_x    : pixman_kernel_t;
+      reconstruct_y    : pixman_kernel_t;
+      sample_x         : pixman_kernel_t;
+      sample_y         : pixman_kernel_t;
+      subsample_bits_x : int;
+      subsample_bits_y : int) return access pixman_fixed_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_filter_create_separable_convolution";
+
+   function pixman_image_fill_rectangles
+     (op      : pixman_op_t;
+      image   : access pixman_image_t;
+      color   : access constant pixman_color_t;
+      n_rects : int;
+      rects   : access constant pixman_rectangle16_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_fill_rectangles";
+
+   function pixman_image_fill_boxes
+     (op      : pixman_op_t;
+      dest    : access pixman_image_t;
+      color   : access constant pixman_color_t;
+      n_boxes : int;
+      boxes   : access constant pixman_box32_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_fill_boxes";
+
+   function pixman_compute_composite_region
+     (region     : access pixman_region16_t;
+      src_image  : access pixman_image_t;
+      mask_image : access pixman_image_t;
+      dest_image : access pixman_image_t;
+      src_x      : int16_t;
+      src_y      : int16_t;
+      mask_x     : int16_t;
+      mask_y     : int16_t;
+      dest_x     : int16_t;
+      dest_y     : int16_t;
+      width      : uint16_t;
+      height     : uint16_t) return pixman_bool_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_compute_composite_region";
+
+   procedure pixman_image_composite
+     (op     : pixman_op_t;
+      src    : access pixman_image_t;
+      mask   : access pixman_image_t;
+      dest   : access pixman_image_t;
+      src_x  : int16_t;
+      src_y  : int16_t;
+      mask_x : int16_t;
+      mask_y : int16_t;
+      dest_x : int16_t;
+      dest_y : int16_t;
+      width  : uint16_t;
+      height : uint16_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_composite";
+
+   procedure pixman_image_composite32
+     (op     : pixman_op_t;
+      src    : access pixman_image_t;
+      mask   : access pixman_image_t;
+      dest   : access pixman_image_t;
+      src_x  : int32_t;
+      src_y  : int32_t;
+      mask_x : int32_t;
+      mask_y : int32_t;
+      dest_x : int32_t;
+      dest_y : int32_t;
+      width  : int32_t;
+      height : int32_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_image_composite32";
+
+   function pixman_glyph_cache_create return access pixman_glyph_cache_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_glyph_cache_create";
+
+   procedure pixman_glyph_cache_destroy (cache : access pixman_glyph_cache_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_glyph_cache_destroy";
+
+   procedure pixman_glyph_cache_freeze (cache : access pixman_glyph_cache_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_glyph_cache_freeze";
+
+   procedure pixman_glyph_cache_thaw (cache : access pixman_glyph_cache_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_glyph_cache_thaw";
+
+   function pixman_glyph_cache_lookup
+     (cache     : access pixman_glyph_cache_t;
+      font_key  : System.Address;
+      glyph_key : System.Address) return System.Address
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_glyph_cache_lookup";
+
+   function pixman_glyph_cache_insert
+     (cache       : access pixman_glyph_cache_t;
+      font_key    : System.Address;
+      glyph_key   : System.Address;
+      origin_x    : int;
+      origin_y    : int;
+      glyph_image : access pixman_image_t) return System.Address
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_glyph_cache_insert";
+
+   procedure pixman_glyph_cache_remove
+     (cache     : access pixman_glyph_cache_t;
+      font_key  : System.Address;
+      glyph_key : System.Address)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_glyph_cache_remove";
+
+   procedure pixman_glyph_get_extents
+     (cache    : access pixman_glyph_cache_t;
+      n_glyphs : int;
+      glyphs   : access pixman_glyph_t;
+      extents  : access pixman_box32_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_glyph_get_extents";
+
+   function pixman_glyph_get_mask_format
+     (cache    : access pixman_glyph_cache_t;
+      n_glyphs : int;
+      glyphs   : access constant pixman_glyph_t) return pixman_format_code_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_glyph_get_mask_format";
+
+   procedure pixman_composite_glyphs
+     (op          : pixman_op_t;
+      src         : access pixman_image_t;
+      dest        : access pixman_image_t;
+      mask_format : pixman_format_code_t;
+      src_x       : int32_t;
+      src_y       : int32_t;
+      mask_x      : int32_t;
+      mask_y      : int32_t;
+      dest_x      : int32_t;
+      dest_y      : int32_t;
+      width       : int32_t;
+      height      : int32_t;
+      cache       : access pixman_glyph_cache_t;
+      n_glyphs    : int;
+      glyphs      : access constant pixman_glyph_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_composite_glyphs";
+
+   procedure pixman_composite_glyphs_no_mask
+     (op       : pixman_op_t;
+      src      : access pixman_image_t;
+      dest     : access pixman_image_t;
+      src_x    : int32_t;
+      src_y    : int32_t;
+      dest_x   : int32_t;
+      dest_y   : int32_t;
+      cache    : access pixman_glyph_cache_t;
+      n_glyphs : int;
+      glyphs   : access constant pixman_glyph_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_composite_glyphs_no_mask";
+
+   function pixman_sample_ceil_y
+     (y : pixman_fixed_t; bpp : int) return pixman_fixed_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_sample_ceil_y";
+
+   function pixman_sample_floor_y
+     (y : pixman_fixed_t; bpp : int) return pixman_fixed_t
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_sample_floor_y";
+
+   procedure pixman_edge_step (e : access pixman_edge_t; n : int)
+   with Import => True, Convention => C, External_Name => "pixman_edge_step";
+
+   procedure pixman_edge_init
+     (e       : access pixman_edge_t;
+      bpp     : int;
+      y_start : pixman_fixed_t;
+      x_top   : pixman_fixed_t;
+      y_top   : pixman_fixed_t;
+      x_bot   : pixman_fixed_t;
+      y_bot   : pixman_fixed_t)
+   with Import => True, Convention => C, External_Name => "pixman_edge_init";
+
+   procedure pixman_line_fixed_edge_init
+     (e     : access pixman_edge_t;
+      bpp   : int;
+      y     : pixman_fixed_t;
+      line  : access constant pixman_line_fixed_t;
+      x_off : int;
+      y_off : int)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_line_fixed_edge_init";
+
+   procedure pixman_rasterize_edges
+     (image : access pixman_image_t;
+      l     : access pixman_edge_t;
+      r     : access pixman_edge_t;
+      t     : pixman_fixed_t;
+      b     : pixman_fixed_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_rasterize_edges";
+
+   procedure pixman_add_traps
+     (image : access pixman_image_t;
+      x_off : int16_t;
+      y_off : int16_t;
+      ntrap : int;
+      traps : access constant pixman_trap_t)
+   with Import => True, Convention => C, External_Name => "pixman_add_traps";
+
+   procedure pixman_add_trapezoids
+     (image  : access pixman_image_t;
+      x_off  : int16_t;
+      y_off  : int;
+      ntraps : int;
+      traps  : access constant pixman_trapezoid_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_add_trapezoids";
+
+   procedure pixman_rasterize_trapezoid
+     (image : access pixman_image_t;
+      trap  : access constant pixman_trapezoid_t;
+      x_off : int;
+      y_off : int)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_rasterize_trapezoid";
+
+   procedure pixman_composite_trapezoids
+     (op          : pixman_op_t;
+      src         : access pixman_image_t;
+      dst         : access pixman_image_t;
+      mask_format : pixman_format_code_t;
+      x_src       : int;
+      y_src       : int;
+      x_dst       : int;
+      y_dst       : int;
+      n_traps     : int;
+      traps       : access constant pixman_trapezoid_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_composite_trapezoids";
+
+   procedure pixman_composite_triangles
+     (op          : pixman_op_t;
+      src         : access pixman_image_t;
+      dst         : access pixman_image_t;
+      mask_format : pixman_format_code_t;
+      x_src       : int;
+      y_src       : int;
+      x_dst       : int;
+      y_dst       : int;
+      n_tris      : int;
+      tris        : access constant pixman_triangle_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_composite_triangles";
+
+   procedure pixman_add_triangles
+     (image  : access pixman_image_t;
+      x_off  : int32_t;
+      y_off  : int32_t;
+      n_tris : int;
+      tris   : access constant pixman_triangle_t)
+   with
+     Import        => True,
+     Convention    => C,
+     External_Name => "pixman_add_triangles";
 private
    --- Helpers
    function To_Unsigned_32 (S : pixman_fixed_t) return uint32_t
