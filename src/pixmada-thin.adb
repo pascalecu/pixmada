@@ -45,13 +45,13 @@ package body Pixmada.Thin is
       return To_Signed_32 (S);
    end pixman_int_to_fixed;
 
-   function pixman_fixed_to_double (F : pixman_fixed_t) return Long_Float is
+   function pixman_fixed_to_double (F : pixman_fixed_t) return double is
    begin
-      return Long_Float (F) / Long_Float (pixman_fixed_1);
+      return double (F) / double (pixman_fixed_1);
    end pixman_fixed_to_double;
 
-   function pixman_double_to_fixed (D : Long_Float) return pixman_fixed_t is
-      Tmp : Long_Float := D * 65536.0;
+   function pixman_double_to_fixed (D : double) return pixman_fixed_t is
+      Tmp : double := D * 65536.0;
    begin
       return pixman_fixed_t (Integer (Tmp));
    end pixman_double_to_fixed;
