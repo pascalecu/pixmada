@@ -26,4 +26,8 @@ project Pixmada is
       for Artifacts (".") use ("share");
    end Install;
 
+   package Linker is
+      for Linker_Options use ("-lpixman-1");
+   end Linker;
+
 end Pixmada;

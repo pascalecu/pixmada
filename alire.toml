@@ -8,3 +8,6 @@ maintainers-logins = ["pascalecu"]
 licenses = "BSD-2-Clause"
 website = "https://github.com/pascalecu/pixmada"
 tags = ["pixman", "graphics", "2d-graphics", "image", "images", "rasterization"]
+
+[[depends-on]]
+libpixman = "*"
