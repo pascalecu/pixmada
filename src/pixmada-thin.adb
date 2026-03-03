@@ -22,10 +22,7 @@ package body Pixmada.Thin is
       if N = 0 then
          return X;
       elsif N >= 32 then
-         return
-           (if X < 0
-            then pixman_fixed_t'Last
-            else pixman_fixed_t (0)); -- -1 or 0
+         return (if X < 0 then pixman_fixed_t (-1) else pixman_fixed_t (0));
       else
          R := Shift_Right (U, N);
          if X < 0 then
