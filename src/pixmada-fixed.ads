@@ -16,9 +16,13 @@ package Pixmada.Fixed is
    One_Minus_E : constant Fixed_16_16 := One - Epsilon;
    Minus_One   : constant Fixed_16_16 := -1.0;
 
-   function To_Fixed (F : pixman_fixed_t) return Fixed_16_16;
-   function To_Pixman (F : Fixed_16_16) return pixman_fixed_t;
+   function Cast (F : pixman_fixed_t) return Fixed_16_16
+   with Inline;
+   function Cast (F : Fixed_16_16) return pixman_fixed_t
+   with Inline;
 
-   function To_Fixed (F : pixman_fixed_32_32_t) return Fixed_32_32;
-   function To_Pixman (F : Fixed_32_32) return pixman_fixed_32_32_t;
+   function Cast (F : pixman_fixed_32_32_t) return Fixed_32_32
+   with Inline;
+   function Cast (F : Fixed_32_32) return pixman_fixed_32_32_t
+   with Inline;
 end Pixmada.Fixed;
