@@ -25,4 +25,13 @@ package Pixmada.Fixed is
    with Inline;
    function Cast (F : Fixed_32_32) return pixman_fixed_32_32_t
    with Inline;
+
+   function Floor (F : Fixed_16_16) return Fixed_16_16;
+   function Ceil (F : Fixed_16_16) return Fixed_16_16;
+   function Frac (F : Fixed_16_16) return Fixed_16_16;
+   function Mod_2 (F : Fixed_16_16) return Fixed_16_16;
+
+   function Floor (F : Fixed_32_32) return Fixed_32_32;
+   function Ceil (F : Fixed_32_32) return Fixed_32_32;
+   function Frac (F : Fixed_32_32) return Fixed_32_32;
 end Pixmada.Fixed;
