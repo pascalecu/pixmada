@@ -19,6 +19,16 @@ package Pixmada.Fixed is
    function Cast (F : Fixed_16_16) return pixman_fixed_t
    with Inline;
 
+   function Cast (F : Fixed_16_16) return Float
+   with Inline;
+   function Cast (F : Float) return Fixed_16_16
+   with Inline;
+
+   function Cast (F : Fixed_32_32) return Float
+   with Inline;
+   function Cast (F : Float) return Fixed_32_32
+   with Inline;
+
    function Cast (F : pixman_fixed_32_32_t) return Fixed_32_32
    with Inline;
    function Cast (F : Fixed_32_32) return pixman_fixed_32_32_t
